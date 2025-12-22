@@ -18,3 +18,33 @@ and to maintain clear network boundaries as the architecture grows.
 CIDR planning is one of the crucial steps in a real-world project as different services are added over time and if the IPs get exhausted ,we are compelled to rebuild everything 
 
 ## Subnet Layout Plan
+
+The VPC is divided into multiple subnets to separate internet-facing resources
+from internal application components.
+
+The subnet design follows these principles:
+- Public and private subnets are created in pairs
+- Each pair spans a different Availability Zone
+- Subnets are sized to allow growth without unnecessary waste
+
+### Planned Subnets
+
+| Subnet Name | Type    | CIDR Block   | Availability Zone |
+|------------|---------|--------------|-------------------|
+| public-a   | Public  | 10.0.1.0/24  | AZ-A              |
+| public-b   | Public  | 10.0.2.0/24  | AZ-B              |
+| private-a  | Private | 10.0.11.0/24 | AZ-A              |
+| private-b  | Private | 10.0.12.0/24 | AZ-B              |
+
+Each subnet uses a `/24` CIDR, providing 256 IP addresses, which is sufficient
+for application workloads while keeping the network layout simple and readable.
+
+Larger subnets can be created based on project requirements by choosing a
+smaller subnet prefix. For example, a `/20` subnet provides 4,096 IP addresses.
+
+Subnet pairing across Availability Zones is critical. If all private subnets
+exist in a single AZ, an AZ failure would make all application instances
+unreachable, even if the load balancer is still available.
+
+Subnet CIDR gaps are intentional to allow future subnet insertion without
+restructuring the existing network.
